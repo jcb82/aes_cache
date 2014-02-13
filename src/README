@@ -1,0 +1,73 @@
+Joseph Bonneau
+jbonneau@stanford.edu
+December 2005
+
+README file for homestretch and warmup timing attacks against AES,
+contained in the folder jbonneau_aes/
+
+The files in this directory contain implementations of the "warmup" and
+"home-stretch" timing attacks as described in the paper. The source files
+should compile and run using the provided make file, they have been tested
+on Debian Linux with the following /proc/version:
+
+Linux version 2.6.12.6up (root@sudebian2.Stanford.EDU) (gcc version 3.3.5
+(Debian 1:3.3.5-13)) #1 Thu Sep 29 13:39:54 PDT 2005
+
+Here is a list of the various files and their purposes:
+
+
+Makefile and Executables: 
+--------------------------------------
+The makefile compiles source files into the executables describe_key, w_attack, and
+hs_attack:
+
+describe_key: Utility to print some basic info about an AES key stored in a 16
+byte file, including the key bytes, the last 16 bytes of the expanded key,
+and the encryption of a zero block under that key.
+
+w_attack: Implementation of the warmup attack. Runs all encryption on the
+local machine. Always uses clean cache assumption.
+
+hs_attack: Implementation of the home-strecth attack. Runs all encryption on the
+local machine. By default, uses clean cache assumption, this can be
+overriden with the '--noevict' option.
+
+
+Scripts:
+----------
+Bash scripts provided for convenience:
+
+genkey: Generates a random 16 byte key from /dev/random
+
+testwarmup/testhomestretch: Will run either attack a specified number of
+times on different random keys, dumping the output to a log file. Can be
+used to test performance of the attacks on various systems.
+
+
+Source Files:
+----------------
+aes.h, aes_core.c, aes_locl.h, e_os2.h, opensslconf.h: OpenSSL v 0.9.8a
+implementation of the AES cipher. Only change is a  to aes_core.c indicate
+the location of the encryption tables in memory, to enable the attack to
+run with a "clean cache" assumption. Also, #include statements have been
+changed to local files. These files are compiled independent of the full
+OpenSSL distr bution.
+
+encrypt.c, encrypt.h: Contains an interface between the OpenSSL AES
+implementation and the attack programs. Can be changed to adapt the attack
+to other implementations of AES.
+
+key_revert.c, key_revert.h: Contains a function to recover a raw AES key
+given the final 16 bytes, used in the home-stretch attack.
+
+cache_evict.c, cache_evict.h: Contains a funciton to touch bytes in memory
+at an offset from the AES tables such that they will be evicted from
+cached memory, can be used in either attack.
+
+describe_key.c: key description utility
+
+hs_attack.c, w_attack.s: The actual implementation of the attacks. See the
+paper for more details.
+
+
+
